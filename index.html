@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>小陈阿姨四属性与复合属性精密测试</title>
+  <style>
+    :root{--bg:#f5f1ea;--paper:#fffdf8;--ink:#24211d;--muted:#746e65;--line:#ddd4c8;--accent:#7b4f38;--soft:#efe4d8;--ok:#426a50;--warn:#9a632c}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#f2ece3,#faf8f3);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+    .app{max-width:980px;margin:0 auto;padding:28px 18px 70px}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 10px 30px #6e4a2b12;margin:18px 0}
+    h1{font-size:30px;line-height:1.25;margin:0 0 8px}h2{font-size:22px;margin:0 0 12px}h3{font-size:17px;margin:22px 0 6px}.muted{color:var(--muted)}.notice{border-left:4px solid var(--accent);padding:10px 14px;background:var(--soft);border-radius:8px}
+    button{font:inherit;border:1px solid var(--line);border-radius:12px;padding:11px 16px;background:#fff;cursor:pointer}button.primary{background:var(--accent);color:white;border-color:var(--accent)}#modeBox button.selected,#evidenceBox button.selected{background:var(--accent);color:#fff;border:2px solid #5f3827;box-shadow:0 0 0 3px #7b4f3826;font-weight:700}#modeBox button:focus-visible,#evidenceBox button:focus-visible,.option:focus-visible{outline:3px solid #c58f6d;outline-offset:2px}button:disabled{opacity:.5;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    .progress{height:9px;background:#e7dfd5;border-radius:99px;overflow:hidden;margin:14px 0}.progress i{display:block;height:100%;background:var(--accent);width:0;transition:.25s}
+    .option{display:block;width:100%;text-align:left;margin:10px 0;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}.option:hover{border-color:#af8a72}.option.selected{border:2px solid var(--accent);background:#faf1e9}.rank{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;margin-right:9px;font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.metric{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}.metric b{font-size:22px}.bar{height:9px;background:#eee7de;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--accent)}
+    table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}details{border-top:1px solid var(--line);padding:10px 0}summary{cursor:pointer;font-weight:650}.pill{display:inline-block;padding:2px 9px;border-radius:99px;background:var(--soft);margin:2px;font-size:13px}.hidden{display:none!important}.result-title{font-size:28px;color:var(--accent)}code{background:#eee7de;padding:1px 5px;border-radius:5px}.small{font-size:13px}.danger{color:#8c3e32}.good{color:var(--ok)}
+    @media(max-width:620px){.card{padding:18px}.app{padding:14px 10px 50px}h1{font-size:25px}}
+  </style>
+</head>
+<body><main class="app">
+  <section id="intro" class="card">
+    <h1>四属性与复合属性测试</h1>
+    <p class="muted">依据“小陈阿姨的茶室”公开文章整理的高区分度、强制取舍式访谈工具</p>
+    <div class="notice">本测试不是心理诊断。全部计算在本机浏览器完成；答案只保存在当前浏览器的 localStorage，不上传网络。题目选项刻意同时包含收益和代价，不存在政治正确答案。固定主问题 42 题：核心属性 12 题、他人观感 8 题、八类技能包 16 题、单属性/感属性/双内核对照 6 题；根据分数接近程度自动追加 0–8 道分支题，最终共 42–50 题，预计 15–20 分钟。</div>
+    <h3>测试测什么</h3>
+    <div class="grid">
+      <div class="metric"><b>凤凰 / 千里马</b><br><span class="muted">靠稀缺“材料”改变现实，还是靠试错找方法走通。</span></div>
+      <div class="metric"><b>白月光 / 朱砂痣</b><br><span class="muted">让关系稳定，还是制造强烈情绪回应。</span></div>
+      <div class="metric"><b>Book / Street Smart</b><br><span class="muted">压抑当下换未来、构造未来预期，还是规避眼前坏处、抓住眼前好处。</span></div>
+      <div class="metric"><b>核心 / 感属性</b><br><span class="muted">区分“不思考就会做的事”和后天学会的表现方式。</span></div>
+    </div>
+    <h3>作答规则</h3>
+    <p>每题先选“最像你”的第一项，也可再选一项“其次像你”；然后标记它是本能、后天策略、现实所迫，还是两者都有。题目没有填空框。不要选最成熟的答案，选你在疲惫、着急、没人看见时更可能做的。</p>
+    <div class="actions"><button class="primary" onclick="startTest()">开始测试</button><button onclick="showMethod()">查看理论与算法</button><button onclick="resetAll()">清除本地答案</button></div>
+  </section>
+
+  <section id="quiz" class="card hidden">
+    <div id="stageLabel" class="pill"></div><span id="counter" class="muted small"></span>
+    <div class="progress"><i id="progressBar"></i></div>
+    <h2 id="stem"></h2><p id="promptHint" class="muted"></p>
+    <div id="options"></div>
+    <div id="modeBox" class="metric">
+      <b>你选择的反应主要属于：</b>
+      <div class="actions" style="margin-top:8px">
+        <button type="button" data-mode="natural" onclick="setMode('natural')">不思考就会这样（本能）</button>
+        <button type="button" data-mode="learned" onclick="setMode('learned')">后来训练出的策略</button>
+        <button type="button" data-mode="forced" onclick="setMode('forced')">现实条件迫使我这样</button>
+        <button type="button" data-mode="mixed" onclick="setMode('mixed')">本能与策略都有</button>
+      </div>
+    </div>
+    <div id="evidenceBox" class="metric">
+      <b>这项做法有多少真实证据：</b>
+      <div class="actions" style="margin-top:8px">
+        <button type="button" data-evidence="idea" onclick="setEvidence('idea')">只是觉得自己会这样</button>
+        <button type="button" data-evidence="once" onclick="setEvidence('once')">真实做过一次</button>
+        <button type="button" data-evidence="repeat" onclick="setEvidence('repeat')">不同场景做过多次</button>
+        <button type="button" data-evidence="effective" onclick="setEvidence('effective')">多次做过且稳定有效</button>
+      </div>
+    </div>
+    <div class="actions"><button onclick="prevQuestion()">上一题</button><button class="primary" id="nextBtn" onclick="nextQuestion()">下一题</button></div>
+  </section>
+
+  <section id="result" class="card hidden"></section>
+
+  <section id="method" class="card hidden">
+    <h2>理论、证据层级与评分算法</h2>
+    <p>题库骨架来自四层材料：基础定义；成对差异文章；单属性与复合属性对照；295 篇可读案例中的行为—结果—反例。3 篇被平台屏蔽的文章不补猜。</p>
+    <details open><summary>复合语法</summary><p><code>A 感 B</code>：B 是更深层核心，A 是他人稳定观感；后天策略与技能另行报告。例如“白月光感朱砂痣”是朱砂痣内核、白月光外壳；“朱砂痣感白月光”则相反。</p></details>
+    <details><summary>Book Smart / Street Smart 的高区分度解释</summary>
+      <ul><li>白月光 BS：压抑当下欲望，投资未来关系与潜力。</li><li>白月光 SS：看到眼前坏处、低收益的人或局势，就节能、回避、不投入。</li><li>朱砂痣 BS：用细节、愿景和未来收益让别人相信“跟我会更好”。</li><li>朱砂痣 SS：看到眼前好处、吸引力和机会就迅速抓住、制造即时反应。</li><li>凤凰 BS：靠本能热爱选择愿意投入一生的稀缺赛道。</li><li>凤凰 SS：宁做鸡头不做凤尾，让天赋在当下能变现且生活舒适。</li><li>千里马 BS：定三年五年目标，按计划长期执行。</li><li>千里马 SS：从即时利益、信息差和现实反馈出发，边做边改。</li></ul>
+    </details>
+    <details><summary>计算</summary>
+      <p>每个选项包含隐藏的核心属性、技能属性、BS/SS 与场景标签。第一选择系数 1.0，第二选择系数 0.38。核心题以 0.86 为基础核心权重；真正的“双边都不可牺牲”选项可携带第二核心证据（系数 0.90），但仍需跨场景重复；技能题只以 0.28 的低权重辅助核心判断；对照题为 0.56；分支题为 0.72。若自报为后天策略或现实所迫，核心权重进一步下降。技能包得分以 16 道技能题为主，对照题、分支题和核心题依次降权；所有得分都按实际题目暴露的理论最大值归一化。</p>
+      <p>置信度综合完成度、锚点一致性、核心领先度、分支消歧、场景覆盖、回答来源、观感证据和技能真实证据。大量并列选择、只有假设而无真实行为、只在单一场景出现都会降低置信度。</p>
+    </details>
+    <details><summary>分支</summary><p>主问卷完成后自动检查 W/Z、F/Q、BS/SS 差值，以及核心与外显是否反转；只加载需要的固定分支。最多追加 8 题，不会根据个人印象无限追问。</p></details>
+    <details><summary>伦理边界</summary><p>情绪价值不等于操控；本工具不鼓励制造嫉妒、诱导金钱、越界控制或职场霸凌。名人案例是叙事材料，不是科学样本。</p></details>
+    <div class="actions"><button onclick="hideMethod()">返回</button></div>
+  </section>
+</main>
+<script>
+const T=['W','Z','Q','F']; const S=['BS','SS'];
+const O=(text,core,skillAttr,smart,why,vibe=null,core2=null)=>({text,core,skillAttr,smart,why,vibe,core2});
+const questions=[
+{id:'E1',stage:'情绪底色',layer:'core',anchor:'WZ-stress',stem:'一个重要的人把坏情绪发泄到你身上，而且你知道主要不是你的错。哪种代价你更能忍？',opts:[
+ O('先让他把情绪倒完。我会难受，但关系不要在最糟的时候再升级。','W','W','BS','以当下忍耐换长期稳定'),
+ O('我要让他知道这件事确实伤到我；哪怕吵起来，也不能让他毫无感觉。','Z','Z','SS','需要即时情绪回应'),
+ O('先处理让他崩溃的实际问题，情绪账以后再算。','Q','W','SS','行动优先于情绪'),
+ O('先判断这是不是一次性失控；若是重复模式，我会重新评估关系价值。','F','W','BS','结构判断与边界') ]},
+{id:'E2',stage:'情绪底色',layer:'core',anchor:'WZ-distance',stem:'重要的人突然冷淡三天。没有证据表明他要离开，但你已经开始不舒服。你最容易屈服于哪种冲动？',opts:[
+ O('继续维持原来的关心，等他自己恢复；贸然追问可能破坏关系。','W','W','BS','维护长期秩序'),
+ O('想办法让他必须回应：直接问、表现委屈、冷淡回去，至少确认我是否重要。','Z','Z','SS','追求即时回应'),
+ O('找一个实际理由重新建立联系，看行动反馈而不是猜。','Q','Z','SS','用动作试探现实'),
+ O('暂时消失并观察；如果他不主动，我会调整对他的估值。','F','W','SS','节能与价值重估') ]},
+{id:'E3',stage:'情绪底色',layer:'core',anchor:'WZ-give',stem:'你为一个潜力很高、目前却处在低谷的人付出。哪一种风险更像你愿意承担的？',opts:[
+ O('长期给支持、少提要求；只要相信未来，我可以延迟自己的收益。','W','W','BS','白月光 BS 的未来投资'),
+ O('我需要确认他当下非常在乎我；未来再好，没有强回应也不值得。','Z','Z','SS','朱砂痣的即时情绪回报'),
+ O('我会一起做事、解决问题，但每阶段都要看到进展。','Q','W','SS','试错与阶段结果'),
+ O('我先判断他是否真有稀缺潜力，而不是被故事感动。','F','W','BS','识别材料与上限') ]},
+{id:'E4',stage:'关系策略',layer:'skill',anchor:'WZ-hurt',stem:'你受了委屈，却知道“把事情闹大”可能失去一个重要关系。你更可能选择哪种不完美？',opts:[
+ O('暂时吞下，等关系稳定后再谈；但可能因此积累怨气。','W','W','BS','延迟表达'),
+ O('现在就让对方看见我的痛苦；可能显得不体面，但我受不了无回应。','Z','Z','SS','即时揭露情绪'),
+ O('只谈可执行边界，不讨论谁更爱谁；可能显得冷。','Q','W','SS','问题解决'),
+ O('不立刻摊牌，先收集事实并准备退出选项；可能让关系更疏离。','F','W','BS','战略后撤') ]},
+{id:'E5',stage:'关系策略',layer:'contrast',anchor:'WZ-attention',stem:'你想让一个很优秀的人记住你。哪一种“失控风险”你更愿意承担？',opts:[
+ O('长期可靠、少制造麻烦，接受自己一开始可能不显眼。','W','W','SS','稳定但可能被忽视'),
+ O('制造鲜明互动和情绪记忆点，接受有人觉得我太有攻击性。','Z','Z','SS','张力但可能失控'),
+ O('帮他解决一个别人没解决的问题，接受关系显得功利。','Q','Z','SS','行动换位置'),
+ O('展示稀缺能力和见识，接受对方可能觉得我骄傲。','F','Z','BS','材料换关注') ]},
+{id:'E6',stage:'关系策略',layer:'contrast',anchor:'WZ-value',stem:'当你发现一个人“有明显坏处，但未来可能非常有价值”，你更容易被哪一边说服？',opts:[
+ O('未来价值。如果认准了，我能压住当下欲望和不舒服长期投资。','W','W','BS','看到未来好处而忍当下'),
+ O('眼前坏处。现在就消耗我的人，不值得继续投入时间。','W','F','SS','白月光 SS：见坏处不做'),
+ O('眼前吸引力。只要此刻有明确好处和强烈感觉，我会先抓住。','Z','Q','SS','朱砂痣 SS：见好处立刻做'),
+ O('我会让对方相信未来与我绑定会有更大收益，再争取共同投入。','Z','F','BS','朱砂痣 BS：构造未来预期') ]},
+{id:'C1',stage:'事业内核',layer:'core',anchor:'FQ-start',stem:'进入一个没人给攻略的新领域，你必须在“想清楚”和“抢时间”之间损失一边。你更愿意损失什么？',opts:[
+ O('宁可晚一些，也要先找到真正值得投入、符合我优势的方向。','F','F','BS','材料与长期赛道'),
+ O('宁可做错几次，也要尽快获得真实反馈。','Q','Q','SS','试错与反馈'),
+ O('先跟随成熟规则，避免把基础错误重犯。','W','Q','BS','秩序与可预测'),
+ O('先抓住最有吸引力、最可能带来人和资源的机会。','Z','Q','SS','即时机会') ]},
+{id:'C2',stage:'事业内核',layer:'core',anchor:'FQ-failure',stem:'一个投入两年的项目失败，竞争对手却因为风口成功。哪种痛苦更像你？',opts:[
+ O('我最难受的是：明明判断力和能力不差，为什么世界没看见。','F','F','BS','才华未兑现'),
+ O('我最难受的是没再多试一种方法；会马上研究下一次怎么跑。','Q','Q','SS','方法未走通'),
+ O('我更担心生活和责任失稳，会先恢复基本秩序。','W','Q','SS','稳定优先'),
+ O('我更在意输给具体的人，会想尽快扳回一局。','Z','Q','SS','竞争与即时反应') ]},
+{id:'C3',stage:'事业内核',layer:'core',anchor:'FQ-talent',stem:'有一项你真心喜欢且有天赋的事，但短期不赚钱。另一项普通却容易变现。你更无法承受哪种遗憾？',opts:[
+ O('一生没把真正喜欢的天赋做到极致。','F','F','BS','凤凰 BS：本能选择一生赛道'),
+ O('错过眼前可赚钱、可积累的机会。','Q','Q','SS','现实结果优先'),
+ O('为了梦想让生活和家人长期不稳定。','W','Q','BS','秩序代价'),
+ O('做了没有关注、没有反馈、无人被打动的作品。','Z','F','SS','情绪传播与回应') ]},
+{id:'C4',stage:'事业内核',layer:'contrast',anchor:'FQ-position',stem:'你有明显优势，但进入顶级平台只能当末位；留在次一级平台能当核心。你更愿意承担哪种损失？',opts:[
+ O('留在顶级平台，接受暂时不被重视，赌长期天花板。','F','F','BS','凤凰 BS：长期高度'),
+ O('去次一级平台做核心，先把优势变现、获得舒适和控制感。','F','Q','SS','凤凰 SS：宁做鸡头'),
+ O('哪里能给我更多真实任务和试错机会就去哪里。','Q','Q','SS','千里马现实训练'),
+ O('哪里有清楚晋升规则和可靠导师就去哪里。','Q','W','BS','千里马计划执行') ]},
+{id:'C5',stage:'事业策略',layer:'skill',anchor:'FQ-plan',stem:'未来三年只能选择一种推进方式。哪种缺点你更能接受？',opts:[
+ O('定下长期计划并严格执行，哪怕中途出现更诱人的机会。','Q','F','BS','千里马 BS：目标计划'),
+ O('不断根据即时反馈改方向，哪怕别人觉得我不够专一。','Q','Q','SS','千里马 SS：现实迭代'),
+ O('只做最符合天赋的主线，接受变现慢和不确定。','F','F','BS','凤凰 BS'),
+ O('选择最能立刻放大优势的位置，接受平台不够顶级。','F','Q','SS','凤凰 SS') ]},
+{id:'C6',stage:'事业策略',layer:'contrast',anchor:'FQ-drive',stem:'工作长期稳定但没有突破，你最容易被哪种欲望拖走？',opts:[
+ O('想找一个更能证明自己稀缺能力的舞台。','F','F','BS','发挥材料'),
+ O('想同时开新项目、多试赛道，忙起来才有活力。','Q','Q','SS','行动续航'),
+ O('想守住稳定生活，把突破留到条件更成熟时。','W','Q','BS','稳定投资'),
+ O('想做更有话题、更能让人注意到我的事。','Z','F','SS','即时关注') ]},
+{id:'S1',stage:'Smart 区分',layer:'skill',anchor:'BS-SS-nowfuture',stem:'你判断一个机会时，更容易犯哪种错？',opts:[
+ O('因为相信长期潜力，忍了太久眼前已经很明显的坏处。','W','W','BS','未来投资过度'),
+ O('因为看到眼前坏处太快撤退，错过了长期关系或潜力。','W','F','SS','当下节能过度'),
+ O('因为眼前有好处或感觉太强，立刻投入，后来发现没后劲。','Z','Q','SS','即时抓取过度'),
+ O('因为太会讲未来、也相信自己的愿景，最后兑现压力很大。','Z','F','BS','未来叙事过度') ]},
+{id:'S2',stage:'Smart 区分',layer:'skill',anchor:'BS-SS-social',stem:'面对一个“目前没用，但你觉得未来可能重要”的人，你更可能：',opts:[
+ O('长期保持温和联系，哪怕当下没有回报。','W','W','BS','未来关系投资'),
+ O('礼貌但疏远，把时间留给眼前重要的人。','W','F','SS','当下节能'),
+ O('先创造一次有趣、有吸引力的互动，看能否立刻形成机会。','Z','Q','SS','即时情绪机会'),
+ O('向他展示一个足够大的未来合作图景，让他愿意提前下注。','Z','F','BS','愿景换投入') ]},
+{id:'S3',stage:'Smart 区分',layer:'skill',anchor:'BS-SS-work',stem:'你更愿意被哪种评价击中？',opts:[
+ O('“她方向看得远，但兑现得太慢。”','F','F','BS','凤凰 BS'),
+ O('“她会选位置，但有时宁做鸡头、上限不够。”','F','Q','SS','凤凰 SS'),
+ O('“她计划性强，但机会变化时不够灵活。”','Q','F','BS','千里马 BS'),
+ O('“她很会找路，但方向换得太快。”','Q','Q','SS','千里马 SS') ]},
+{id:'X1',stage:'单/复合区分',layer:'skill',anchor:'WZ-shell',stem:'一个人外表温和顺从，真正遇到利益冲突时却会怎样，最能区分你？',opts:[
+ O('仍以维持关系为先，容易被动依附；外在偶尔有情绪张力。','W','Z','BS','朱砂痣感白月光'),
+ O('表面顺从，内里会留后手、平衡权力并争取主动。','Z','W','BS','白月光感朱砂痣'),
+ O('直接表达和争取，宁可关系有波动。','Z','Z','SS','纯朱砂痣'),
+ O('真正能忍、能接住负面，长期用稳定产生影响。','W','W','BS','纯白月光') ]},
+{id:'X2',stage:'单/复合区分',layer:'skill',anchor:'FQ-shell',stem:'一个人既有天赋又能做事。哪种“卡点”更像其真正内核？',opts:[
+ O('最怕天赋没被世界使用；执行是为了放大不可替代性。','F','Q','BS','千里马感凤凰'),
+ O('最怕路没走通；天赋只是提高试错成功率。','Q','F','SS','凤凰感千里马'),
+ O('没有优势平台就很难投入，宁愿等更适合的位置。','F','F','SS','凤凰主导'),
+ O('没有天赋也能继续试，行动本身会带来机会。','Q','Q','SS','千里马主导') ]},
+{id:'X3',stage:'单/复合区分',layer:'skill',anchor:'WF-direction',stem:'同样是“温柔、有才华”的人，哪种长期欲望更像你？',opts:[
+ O('真正想守住关系和秩序；才华是让我成为更有价值的长期伙伴。','W','F','BS','凤凰感白月光'),
+ O('真正想施展才华和精神高度；温和体面是表达方式。','F','W','BS','白月光感凤凰'),
+ O('只要关系安稳，才华不被看见也能接受。','W','W','BS','纯白月光'),
+ O('只要能力得到发挥，不一定需要稳定亲密关系。','F','F','BS','纯凤凰') ]},
+{id:'X4',stage:'单/复合区分',layer:'contrast',anchor:'ZQ-direction',stem:'同样是“有行动力、有魅力”的人，哪种失败更不能接受？',opts:[
+ O('做了很多事却没有赢；情绪魅力只是推进结果的武器。','Q','Z','SS','朱砂痣感千里马'),
+ O('赢了却没人真正被我吸引、在意或记住；能力是魅力的支撑。','Z','Q','SS','千里马感朱砂痣'),
+ O('只要能把事做成，别人是否上头不重要。','Q','Q','SS','纯千里马'),
+ O('只要关系有强烈回应，现实结果可以晚一点。','Z','Z','SS','纯朱砂痣') ]},
+{id:'V1',stage:'现实校验',layer:'core',anchor:'default-fatigue',stem:'当你很累、很急、没有余力维持成熟形象时，你最容易退回：',opts:[
+ O('忍住、维持秩序、先别让关系散掉。','W','W','SS','稳定默认'),
+ O('让重要的人看见我的情绪，必须给我回应。','Z','Z','SS','情绪默认'),
+ O('先做能立刻改变现实的一步，错了再改。','Q','Q','SS','行动默认'),
+ O('先判断最关键的价值、风险和位置，宁可暂时不动。','F','F','BS','判断默认') ]},
+{id:'V2',stage:'现实校验',layer:'core',anchor:'unseen',stem:'如果没人看见、没有赞美、没有关系收益，你仍最愿意长期做的是：',opts:[
+ O('照顾好重要的人和稳定生活。','W','W','BS','长期关系动机'),
+ O('表达、创作或体验能让我产生强烈感受的事。','Z','Z','SS','情绪动机'),
+ O('不断解决现实问题、完成目标、走通新路。','Q','Q','SS','方法动机'),
+ O('钻研并施展自己真正有天赋、愿意投入一生的事。','F','F','BS','材料动机') ]}
+,{id:'G1',stage:'他人观感',layer:'vibe',anchor:'vibe-first',stem:'不参考你对自己的评价，陌生人或不熟的人最常用哪组词形容你？',opts:[
+ O('温和、乖、让人放松、没攻击性','W','W','BS','白月光观感','W'),
+ O('鲜明、有魅力、有情绪、让人印象深','Z','Z','SS','朱砂痣观感','Z'),
+ O('能干、有冲劲、忙、像会把事情做成','Q','Q','SS','千里马观感','Q'),
+ O('有距离感、聪明、贵气、有自己的一套','F','F','BS','凤凰观感','F')]},
+{id:'G2',stage:'他人观感',layer:'vibe',anchor:'vibe-gap',stem:'别人和你熟悉以后，最可能发现哪种“第一印象不准确”？',opts:[
+ O('看着有距离或条件好，实际很重感情、能忍、愿意长期付出','W','F','BS','表面凤凰、核心白月光','F'),
+ O('看着有攻击性或很亮眼，实际追求稳定、家庭和长期关系','W','Z','BS','表面朱砂痣、核心白月光','Z'),
+ O('看着温顺无害，实际非常敏感、好胜、需要强回应','Z','W','SS','表面白月光、核心朱砂痣','W'),
+ O('看着温和体面，实际骄傲、有稀缺能力、必须施展才华','F','W','BS','表面白月光、核心凤凰','W')]},
+{id:'G3',stage:'他人观感',layer:'vibe',anchor:'vibe-role',stem:'如果让不熟的人只看你五分钟，他们最容易把你安排成哪种角色？',opts:[
+ O('可靠的长期伴侣、协调者或照顾者','W','W','BS','稳定型角色观感','W'),
+ O('有故事、让人好奇、可能带来情绪波动的人','Z','Z','SS','情绪型角色观感','Z'),
+ O('执行者、项目推进者、能扛事的人','Q','Q','SS','行动型角色观感','Q'),
+ O('顾问、核心人物、条件突出或不好接近的人','F','F','BS','稀缺型角色观感','F')]},
+{id:'G4',stage:'他人观感',layer:'vibe',anchor:'vibe-control',stem:'如果你刻意经营形象，最容易成功营造、且别人确实会相信的是：',opts:[
+ O('稳定、体贴、值得长期信任','W','W','BS','可营造白月光观感','W'),
+ O('有吸引力、特别、情绪感染力强','Z','Z','SS','可营造朱砂痣观感','Z'),
+ O('事业感、行动力、很能干','Q','Q','SS','可营造千里马观感','Q'),
+ O('稀缺、聪明、有层级感或距离感','F','F','BS','可营造凤凰观感','F')]}
+
+,{id:'K1',stage:'技能包复测',layer:'skill',anchor:'skill-WZ-future',stem:'一个人现在条件普通，但未来可能明显上升。你最容易采用哪种下注方式？',opts:[
+ O('压住眼前要求，长期支持，让他逐步产生信任和亏欠感','W','W','BS','Book Smart 白月光：延迟收益投资未来'),
+ O('先看眼前是否持续消耗我；坏处已明确就减少投入','W','W','SS','Street Smart 白月光：识别坏处并节能'),
+ O('让他相信和我绑定后的未来更精彩、更有收益','Z','Z','BS','Book Smart 朱砂痣：构造未来预期'),
+ O('抓住当下最有吸引力的窗口，迅速推进关系或合作','Z','Z','SS','Street Smart 朱砂痣：识别好处并行动')]},
+{id:'K2',stage:'技能包复测',layer:'skill',anchor:'skill-WZ-opportunity',stem:'面对一个“不确定但可能很值钱”的机会，你更容易在哪一步犯错？',opts:[
+ O('因为相信长期潜力，忍受了过多当下损失','W','W','BS','BS 白月光过度投资'),
+ O('因为先看到风险和坏处，过早退出','W','W','SS','SS 白月光过度止损'),
+ O('因为太相信自己描绘的未来，把别人和自己都套进去','Z','Z','BS','BS 朱砂痣过度愿景'),
+ O('因为眼前收益或感觉太好，未经验证就立刻投入','Z','Z','SS','SS 朱砂痣过度抓取')]},
+{id:'K3',stage:'技能包复测',layer:'skill',anchor:'skill-FQ-route',stem:'要把事业推进十年，你更愿意接受哪种缺陷？',opts:[
+ O('只做真正热爱且有天赋的方向，接受变现慢和路径窄','F','F','BS','Book Smart 凤凰：终身赛道'),
+ O('选择能立刻放大优势的位置，接受平台不够顶级','F','F','SS','Street Smart 凤凰：鸡头策略'),
+ O('制定三年五年目标并严格执行，接受错过临时机会','Q','Q','BS','Book Smart 千里马：长期计划'),
+ O('随反馈换方法和路线，接受别人觉得我不够专一','Q','Q','SS','Street Smart 千里马：现场迭代')]},
+{id:'K4',stage:'技能包复测',layer:'skill',anchor:'skill-FQ-risk',stem:'面对一个高上限的新赛道，最像你的聪明方式是：',opts:[
+ O('判断它是否匹配自己不可替代的天赋，再决定终身投入','F','F','BS','BS 凤凰判断材料与长期高度'),
+ O('选择自己能迅速成为核心的位置，让优势先兑现','F','F','SS','SS 凤凰选择位置'),
+ O('先制定学习和里程碑计划，按阶段完成','Q','Q','BS','BS 千里马计划执行'),
+ O('先做最小尝试，用真实反馈决定是否加码','Q','Q','SS','SS 千里马试错')]},
+{id:'K5',stage:'技能包复测',layer:'skill',anchor:'skill-WZ-people',stem:'你想影响一个很有资源但戒备心强的人。哪种代价最能接受？',opts:[
+ O('长期可靠地付出，接受很久都拿不到回报','W','W','BS','BS 白月光长期信用'),
+ O('只服务真正重要的人，接受被普通人认为冷淡功利','W','W','SS','SS 白月光当下节能'),
+ O('描绘让他愿意提前投资的未来，接受兑现压力','Z','Z','BS','BS 朱砂痣愿景说服'),
+ O('制造一次强烈而有利的互动，接受关系可能迅速升温或失败','Z','Z','SS','SS 朱砂痣即时张力')]},
+{id:'K6',stage:'技能包复测',layer:'skill',anchor:'skill-FQ-status',stem:'在组织里你有能力，但暂时没有位置。你更可能押哪种筹码？',opts:[
+ O('继续积累真正难替代的专业深度，等长期价值显现','F','F','BS','BS 凤凰长期不可替代'),
+ O('换到更小但能当核心的团队，先拿位置和资源','F','F','SS','SS 凤凰位置兑现'),
+ O('做一份明确晋升计划，把每项要求逐个完成','Q','Q','BS','BS 千里马目标推进'),
+ O('主动接更多任务、找信息、换方法，用实际结果抢机会','Q','Q','SS','SS 千里马行动突破')]},
+{id:'K7',stage:'技能包复测',layer:'skill',anchor:'skill-WZ-loss',stem:'一段投入可能失败时，哪种理由最容易让你继续？',opts:[
+ O('我相信长期关系和未来潜力，不能只看眼前得失','W','W','BS','BS 白月光未来承诺'),
+ O('只要眼前坏处仍可控制，就继续；坏处越线立即停','W','W','SS','SS 白月光风险阈值'),
+ O('我已经让彼此相信一个共同未来，不能轻易拆掉','Z','Z','BS','BS 朱砂痣共同愿景'),
+ O('眼前仍有明确好处、吸引力或可抓住的窗口','Z','Z','SS','SS 朱砂痣即时收益')]},
+{id:'K8',stage:'技能包复测',layer:'skill',anchor:'skill-FQ-regret',stem:'事业上你更怕留下哪一种后悔？',opts:[
+ O('没有把真正有天赋的事情做到足够高','F','F','BS','BS 凤凰天赋使命'),
+ O('明明有优势，却没选择能迅速兑现的位置','F','F','SS','SS 凤凰位置错配'),
+ O('没有坚持完成自己定下的长期目标','Q','Q','BS','BS 千里马计划未完成'),
+ O('因为想太久，没有早点做、早点获得反馈','Q','Q','SS','SS 千里马行动延迟')]},
+{id:'G5',stage:'他人观感复测',layer:'vibe',anchor:'vibe-appearance',stem:'只看外形、穿着和静态照片，不熟的人最容易把你看成：',opts:[
+ O('温顺、清淡、稳定、适合长期相处','W','W','BS','白月光静态观感','W'),
+ O('有性张力、鲜明、情绪浓度高、让人想靠近或警惕','Z','Z','SS','朱砂痣静态观感','Z'),
+ O('干练、有事业感、像能扛任务的人','Q','Q','SS','千里马静态观感','Q'),
+ O('有距离、条件好、聪明或带层级感','F','F','BS','凤凰静态观感','F')]},
+{id:'G6',stage:'他人观感复测',layer:'vibe',anchor:'vibe-dynamic',stem:'经过一次真实合作后，别人更容易记住你哪一点？',opts:[
+ O('稳定可靠，能接住场面和他人的情绪','W','W','BS','白月光动态观感','W'),
+ O('表达有感染力，能让气氛和情绪发生变化','Z','Z','SS','朱砂痣动态观感','Z'),
+ O('推进快、能扛事、最后把事情做完','Q','Q','SS','千里马动态观感','Q'),
+ O('判断独特、有主见、能力或条件明显突出','F','F','BS','凤凰动态观感','F')]},
+{id:'G7',stage:'他人观感复测',layer:'vibe',anchor:'vibe-misread',stem:'别人对你最可能出现哪种“先入为主”的误判？',opts:[
+ O('觉得我好说话、会一直配合，低估了我的边界','W','W','BS','白月光误读','W'),
+ O('觉得我难搞或情绪多，但也因此很难忽视我','Z','Z','SS','朱砂痣误读','Z'),
+ O('觉得我只会拼命干活，低估了我的判断或野心','Q','Q','SS','千里马误读','Q'),
+ O('觉得我骄傲、有距离或已经拥有很多，低估了我的需求','F','F','BS','凤凰误读','F')]},
+{id:'G8',stage:'他人观感复测',layer:'vibe',anchor:'vibe-close',stem:'不熟和熟悉以后，你最大的观感反差更接近：',opts:[
+ O('外表可能普通或有距离，熟悉后发现我非常重关系、能长期付出','W','F','BS','凤凰感白月光候选','F'),
+ O('外表温和乖巧，熟悉后发现我情绪敏感、需要强回应','Z','W','SS','白月光感朱砂痣候选','W'),
+ O('外表强势能干，熟悉后发现我的核心是不断试路和完成目标','Q','F','SS','凤凰感千里马候选','F'),
+ O('外表有行动力，熟悉后发现我真正依赖的是天赋、判断和稀缺性','F','Q','BS','千里马感凤凰候选','Q')]},
+{id:'X5',stage:'核心/观感精辨',layer:'core',anchor:'pure-feel-WZ',stem:'你经常被评价为温柔、稳定、好相处。重要关系进入“稳定但长期缺少回应”的阶段后，你最难长期压住的是：',opts:[
+ O('只要承诺和秩序仍在，我会继续维护关系；平淡可以忍，反复失信不能忍','W','W','BS','无人强化时仍优先稳定，支持白月光核心'),
+ O('关系虽稳定，但我会越来越需要对方主动在意、安抚或给出强回应','Z','W','SS','白月光观感下持续出现朱砂痣需求'),
+ O('温柔主要是减少摩擦；如果长期没有实际推进，我会把精力转去解决问题','Q','W','SS','白月光表现是推进事情的工具'),
+ O('我会判断这段关系是否继续放大我的价值；不再匹配就体面退出','F','W','SS','白月光表现服务于价值与位置判断')]},
+{id:'X6',stage:'核心/观感精辨',layer:'core',anchor:'pure-feel-FQ',stem:'别人常觉得你很拼、很有事业感。假设执行过程无人表扬、也不能带来职位，你仍最难放弃的是：',opts:[
+ O('继续试方法，直到把原本走不通的路径跑通','Q','Q','SS','无人强化仍执着于走通路径，支持千里马核心'),
+ O('让最有天赋和判断优势的能力形成作品；重复执行本身并不吸引我','F','Q','BS','千里马观感下，内核依赖稀缺材料兑现'),
+ O('维持可靠形象和长期秩序；风险失控时我会回到稳定路径','W','Q','BS','能干观感服务于稳定秩序'),
+ O('让成果被重要的人看见并产生强烈回应；无人回应时动力显著下降','Z','Q','SS','能干观感服务于关注与影响')]},
+{id:'X7',stage:'双内核精辨',layer:'core',anchor:'dual-WZ',stem:'在重要关系里，“稳定承诺”和“强烈回应”无法同时得到。哪种长期状态最接近你的真实代价？',opts:[
+ O('失去任何一边都会持续痛苦；我会反复想办法同时保住承诺和回应，哪怕成本更高','W','Z','BS','稳定与强回应都具有不可替代性，双内核候选',null,'Z'),
+ O('最终会保稳定；强烈表达是为唤回关系、达到目的后可以收起','W','Z','SS','白月光核心，朱砂痣为技能'),
+ O('最终会保回应；温顺稳定是外在方式，没有被在意时我无法长期留下','Z','W','BS','朱砂痣核心，白月光为技能'),
+ O('哪边现实收益更高就保哪边；两种方式都可以替换','F','W','SS','策略切换，不支持双内核')]},
+{id:'X8',stage:'双内核精辨',layer:'core',anchor:'dual-FQ',stem:'事业上，“施展不可替代的能力”和“亲手把现实路径跑通”发生冲突。你最接近哪种长期反应？',opts:[
+ O('牺牲任何一边都会觉得人生没完成；我会持续寻找既发挥优势又亲自做成的路径','F','Q','BS','稀缺能力与路径完成都不可替代，双内核候选',null,'Q'),
+ O('最终保住天赋赛道；执行、试错和计划只是把优势变现的工具','F','Q','SS','凤凰核心，千里马为技能'),
+ O('最终保住能走通的路；天赋只是一项提高成功率的资源','Q','F','SS','千里马核心，凤凰为技能'),
+ O('哪条路更快给结果和位置就用哪条；并不执着于能力或过程本身','Q','F','SS','现实策略，不支持双内核')]},
+{id:'X9',stage:'技能/内核精辨',layer:'contrast',anchor:'core-skill',stem:'你已经把一种做法练得很熟。疲惫、无人看见、也没有直接收益时，它通常会怎样？',opts:[
+ O('工作或利益需要时我能稳定使用；条件消失后不会主动维持','F','Q','SS','稳定有效但依赖外部用途，更像技能'),
+ O('我需要提醒和控制自己才能做到；放松后会退回另一种反应','W','Z','BS','可调用但非默认反应，更像技能'),
+ O('即使做得很好，长期不用也不会损伤我的身份感或人生意义','Q','W','SS','高熟练度不等于核心'),
+ O('即使没有收益，长期不这样做仍会让我觉得不像自己','Z','Z','BS','无外部强化仍不可放弃，更像核心')]}
+
+];
+
+const branchPool={
+ WZ:[{id:'BW1',stage:'白月光/朱砂痣分支',layer:'branch',anchor:'WZ-recover',stem:'忍住情绪之后，哪种后续更真实？',opts:[O('对方恢复正常，我很快也就过去了。','W','W','SS','真实稳定'),O('我表面过去了，但需要对方补偿或安抚，否则会一直记着。','Z','W','BS','表稳内敏'),O('我会减少投入，不再给第二次机会。','W','F','SS','SS节能'),O('我会找机会让对方体验同样的感受。','Z','Z','SS','情绪回敬')]},
+ {id:'BW2',stage:'白月光/朱砂痣分支',layer:'branch',anchor:'WZ-core',stem:'在重要关系中，你更害怕哪一种空洞？',opts:[O('没有可预测的长期承诺。','W','W','BS','稳定需求'),O('有承诺但没有强烈在意和情绪回应。','Z','Z','SS','强回应需求'),O('关系没有共同解决现实问题的能力。','Q','W','SS','行动需求'),O('关系没有让我成为更有价值的人。','F','W','BS','成长需求')]}],
+ FQ:[{id:'BF1',stage:'凤凰/千里马分支',layer:'branch',anchor:'FQ-core',stem:'最让你上瘾的成功瞬间是：',opts:[O('别人终于承认我有不可替代的能力。','F','F','BS','材料被看见'),O('一个没人教的方法终于被我试通。','Q','Q','SS','路径被走通'),O('长期计划按节点兑现。','Q','F','BS','BS千里马'),O('我选对位置，优势立刻变现。','F','Q','SS','SS凤凰')]},
+ {id:'BF2',stage:'凤凰/千里马分支',layer:'branch',anchor:'FQ-noasset',stem:'如果确认自己在某领域没有明显天赋，你更可能：',opts:[O('换到更能发挥优势的领域。','F','F','SS','换材料赛道'),O('继续试方法，普通能力也能靠路径做成。','Q','Q','SS','方法坚持'),O('按成熟计划补基础，接受长期积累。','Q','F','BS','计划补足'),O('先找能给我资源和机会的人再决定。','F','Q','SS','平台补足')]}],
+ SMART:[{id:'BS1',stage:'Book/Street Smart分支',layer:'branch',anchor:'BS-SS-core',stem:'下面两种后悔，你更常经历哪一种？',opts:[O('为了未来忍太久，后来发现潜力没有兑现。','W','W','BS','未来投资误判'),O('因为眼前有坏处太快撤退，后来发现错过了。','W','F','SS','坏处规避误判'),O('因为眼前有好处马上投入，后来发现代价更大。','Z','Q','SS','好处抓取误判'),O('把未来说得太好，最后自己背上兑现压力。','Z','F','BS','愿景过度')]},
+ {id:'BS2',stage:'Book/Street Smart分支',layer:'branch',anchor:'BS-SS-core',stem:'你最自然的“聪明”更像：',opts:[O('提前看见长期结构和趋势。','F','F','BS','长期认知'),O('迅速看懂当下利益和人情局势。','Q','F','SS','当下认知'),O('制定多年计划并持续执行。','Q','Q','BS','计划执行'),O('根据即时反馈快速改法。','Q','Q','SS','现场迭代')]}],
+ CROSS:[{id:'BX1',stage:'跨属性双内核分支',layer:'branch',anchor:'WF-core-vs-skill',stem:'你既会照顾局面，又有一项突出能力。必须失去一种满足时，哪一种损失更像伤到根本？',opts:[O('仍能发挥能力，但再也不能维持重要关系的安稳与体面。','W','W','BS','稳定关系是不可替代的根本'),O('关系一直安稳，但突出的能力永远不能形成作品、位置或影响。','F','F','BS','稀缺能力兑现是不可替代的根本'),O('没有人在意我的情绪和存在感。','Z','Z','SS','强回应需求'),O('没有机会亲手把困难的路试通。','Q','Q','SS','路径执行需求')]},
+ {id:'BX2',stage:'跨属性双内核分支',layer:'branch',anchor:'ZQ-core-vs-skill',stem:'你既能制造影响，也很能推进事情。哪一种情况即使结果不错，你仍会觉得“这不是我要的”？',opts:[O('项目完成了，但没有形成真实的关注、偏爱或情绪记忆。','Z','Z','SS','结果不能替代强回应'),O('大家都很喜欢我，但事情没有被真正做成、方法没有跑通。','Q','Q','SS','关注不能替代落地'),O('结果和关注都有，但关系长期不稳定。','W','W','BS','稳定需求'),O('结果和关注都有，但能力没有形成不可替代性。','F','F','BS','价值位置需求')]}]
+};
+
+let order=[],idx=0,state={answers:{},version:42,branches:[]};
+const $=id=>document.getElementById(id);
+function seededShuffle(arr,seed=739391){let a=[...arr],x=seed;for(let i=a.length-1;i>0;i--){x=(x*1664525+1013904223)>>>0;const j=x%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function load(){try{const s=JSON.parse(localStorage.getItem('xiaochen-v42'));if(s?.version===42)state=s}catch{}}
+function save(){localStorage.setItem('xiaochen-v42',JSON.stringify(state))}
+function startTest(){load();order=questions.map(q=>q.id).concat(state.branches||[]);idx=0;$('intro').classList.add('hidden');$('method').classList.add('hidden');$('result').classList.add('hidden');$('quiz').classList.remove('hidden');render()}
+function getQ(){const id=order[idx];return questions.find(q=>q.id===id)||Object.values(branchPool).flat().find(q=>q.id===id)}
+function render(){const q=getQ(),a=state.answers[q.id]||{rank:[],mode:'',evidence:''};$('stageLabel').textContent=q.stage;$('counter').textContent=` ${idx+1}/${order.length}`;$('progressBar').style.width=((idx)/order.length*100)+'%';$('stem').textContent=q.stem;$('promptHint').textContent=q.layer==='vibe'?'优先依据别人真实说过的话，而不是你希望呈现的形象。':'先选最像你的第一项；如有必要，再选一个其次像你的选项。';const shuffled=seededShuffle(q.opts.map((o,i)=>({o,i})),hash(q.id));$('options').innerHTML='';for(const {o,i} of shuffled){const b=document.createElement('button');b.className='option'+(a.rank.includes(i)?' selected':'');const pos=a.rank.indexOf(i);b.innerHTML=(pos>=0?`<span class="rank">${pos+1}</span>`:'')+escapeHtml(o.text);b.onclick=()=>pick(q.id,i);$('options').appendChild(b)}const mt=q.layer==='vibe'?{natural:'多个人真实这样评价过我',learned:'我刻意营造且能成功',forced:'只在特定身份/场景出现',mixed:'主要是我自己的判断'}:{natural:'不思考就会这样（本能）',learned:'后来训练出的策略',forced:'现实条件迫使我这样',mixed:'本能与策略都有'};document.querySelectorAll('#modeBox button').forEach(b=>{b.textContent=mt[b.dataset.mode];b.classList.toggle('selected',b.dataset.mode===a.mode)});$('evidenceBox').classList.toggle('hidden',q.layer==='vibe');document.querySelectorAll('#evidenceBox button').forEach(b=>b.classList.toggle('selected',b.dataset.evidence===a.evidence));$('nextBtn').textContent=idx===order.length-1?'完成并计算':'下一题';$('nextBtn').disabled=!a.rank.length||!a.mode||(q.layer!=='vibe'&&!a.evidence)}
+function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
+function pick(id,opt){const a=state.answers[id]??={rank:[],mode:'',evidence:''};const p=a.rank.indexOf(opt);if(p>=0)a.rank.splice(p,1);else if(a.rank.length<2)a.rank.push(opt);else a.rank[1]=opt;save();render()}
+function setMode(mode){const q=getQ();state.answers[q.id]??={rank:[],mode:'',evidence:''};state.answers[q.id].mode=mode;save();render()}
+function setEvidence(evidence){const q=getQ();state.answers[q.id]??={rank:[],mode:'',evidence:''};state.answers[q.id].evidence=evidence;save();render()}
+function prevQuestion(){if(idx>0){idx--;render()}}
+function nextQuestion(){if(idx<order.length-1){idx++;render();return}if(!(state.branches||[]).length){state.branches=chooseBranches();if(state.branches.length){order=questions.map(q=>q.id).concat(state.branches);save();idx=questions.length;render();return}}showResult()}
+function chooseBranches(){const r=score(false),b=[];if(Math.abs(r.core.W-r.core.Z)<12)b.push(...branchPool.WZ.map(x=>x.id));if(Math.abs(r.core.F-r.core.Q)<12)b.push(...branchPool.FQ.map(x=>x.id));if(Math.abs(r.smart.BS-r.smart.SS)<10)b.push(...branchPool.SMART.map(x=>x.id));const top=Object.values(r.core).sort((a,b)=>b-a);if(top[0]-top[1]<10)b.push(...branchPool.CROSS.map(x=>x.id));return [...new Set(b)].slice(0,8)}
+function blank(){return {W:0,Z:0,Q:0,F:0}}
+function emptyMax(){return {W:0,Z:0,Q:0,F:0}}
+function strength(raw,max){return Object.fromEntries(T.map(t=>[t,max[t]>0?100*raw[t]/max[t]:0]))}function strengthMap(raw,max){return Object.fromEntries(Object.keys(raw).map(k=>[k,max[k]>0?100*raw[k]/max[k]:0]))}
+function score(includeBranches=true){
+ let coreRaw=blank(),coreMax=emptyMax(),strategyRaw=blank(),strategyMax=emptyMax(),vibeRaw=blank(),vibeMax=emptyMax(),smartRaw={BS:0,SS:0},smartMax={BS:0,SS:0},packs={},packMax={};T.forEach(t=>S.forEach(x=>{packs[t+'_'+x]=0;packMax[t+'_'+x]=0}));
+ const coreHits={W:0,Z:0,Q:0,F:0},coreStages={W:new Set(),Z:new Set(),Q:new Set(),F:new Set()},strategyStages={W:new Set(),Z:new Set(),Q:new Set(),F:new Set()},vibeStages={W:new Set(),Z:new Set(),Q:new Set(),F:new Set()};
+ const scene={},anchor={},answeredIds=[],secondaryIds=[],modeCounts={natural:0,learned:0,forced:0,mixed:0,unspecified:0};let evidenceSum=0,evidenceN=0;
+ const ids=questions.map(q=>q.id).concat(includeBranches?(state.branches||[]):[]);
+ for(const id of ids){const q=questions.find(x=>x.id===id)||Object.values(branchPool).flat().find(x=>x.id===id),a=state.answers[id];if(!a?.rank?.length)continue;answeredIds.push(id);if(a.rank.length>1)secondaryIds.push(id);const mode=a.mode||'unspecified';modeCounts[mode]=(modeCounts[mode]||0)+1;scene[q.stage]??=blank();anchor[q.anchor]??=[];
+   if(q.layer==='vibe'){const rel=mode==='natural'?1:mode==='learned'?.72:mode==='forced'?.45:.55;for(const t of T)if(q.opts.some(o=>o.vibe===t))vibeMax[t]+=rel;a.rank.forEach((oi,pos)=>{const o=q.opts[oi],w=(pos===0?1:.38)*rel;if(o.vibe){vibeRaw[o.vibe]+=w;vibeStages[o.vibe].add(q.stage)}anchor[q.anchor].push(o.vibe||o.core)});continue}
+   let base=q.layer==='core'?.86:q.layer==='skill'?.28:q.layer==='branch'?.72:.56,responseWeight=1,coreWeight=base;if(mode==='natural')coreWeight=Math.max(.88,base);if(mode==='learned'){coreWeight=Math.min(.24,base)}if(mode==='forced'){coreWeight=.12;responseWeight=.64}if(mode==='mixed')coreWeight=.58;const evidenceFactor={idea:.22,once:.48,repeat:.76,effective:1}[a.evidence]??.22;const layerSkillFactor=q.layer==='skill'?1:q.layer==='contrast'?.72:q.layer==='branch'?.60:.35;const strategyWeight=(mode==='learned'?1:mode==='natural'?.68:mode==='forced'?.28:.82)*evidenceFactor*layerSkillFactor;const smartWeight=layerSkillFactor*responseWeight;evidenceSum+=evidenceFactor;evidenceN++;
+   for(const t of T){if(q.opts.some(o=>o.core===t||o.core2===t))coreMax[t]+=coreWeight*responseWeight;if(q.opts.some(o=>o.skillAttr===t))strategyMax[t]+=strategyWeight*responseWeight;for(const sm of S)if(q.opts.some(o=>o.skillAttr===t&&o.smart===sm))packMax[t+'_'+sm]+=strategyWeight*responseWeight}for(const sm of S)if(q.opts.some(o=>o.smart===sm))smartMax[sm]+=smartWeight;
+   a.rank.forEach((oi,pos)=>{const o=q.opts[oi],w=(pos===0?1:.38)*responseWeight;coreRaw[o.core]+=w*coreWeight;if(o.core2)coreRaw[o.core2]+=w*coreWeight*.9;strategyRaw[o.skillAttr]+=w*strategyWeight;smartRaw[o.smart]+=w*layerSkillFactor;packs[o.skillAttr+'_'+o.smart]+=w*strategyWeight;scene[q.stage][o.core]+=w;if(o.core2)scene[q.stage][o.core2]+=w*.9;anchor[q.anchor].push(o.core);if(pos===0&&coreWeight>=.55){coreHits[o.core]++;coreStages[o.core].add(q.stage);if(o.core2){coreHits[o.core2]++;coreStages[o.core2].add(q.stage)}}if(pos===0&&strategyWeight>=.35)strategyStages[o.skillAttr].add(q.stage)});
+ }
+ const core=strength(coreRaw,coreMax),strategy=strength(strategyRaw,strategyMax),vibe=strength(vibeRaw,vibeMax),smart={BS:smartMax.BS?100*smartRaw.BS/smartMax.BS:0,SS:smartMax.SS?100*smartRaw.SS/smartMax.SS:0},packPct=strengthMap(packs,packMax),total=ids.length,answered=answeredIds.length,completion=answered/Math.max(1,total),consistency=anchorConsistency(anchor),sorted=Object.entries(core).sort((a,b)=>b[1]-a[1]),gap=sorted[0][1]-sorted[1][1],dominance=Math.min(1,gap/25),branchNeeded=(state.branches||[]).length,branchDone=(state.branches||[]).filter(id=>state.answers[id]?.rank?.length&&state.answers[id]?.mode).length,branchResolve=branchNeeded?branchDone/branchNeeded:1,sceneCoverage=Math.min(1,Object.keys(scene).length/8),secondaryRate=secondaryIds.length/Math.max(1,answered),modeCoverage=1-modeCounts.unspecified/Math.max(1,answered),evidenceQuality=evidenceSum/Math.max(1,evidenceN);let confidence=100*(.18*completion+.17*consistency+.14*dominance+.14*branchResolve+.09*sceneCoverage+.11*modeCoverage+.07*Math.min(1,Object.values(vibeStages).reduce((a,x)=>a+x.size,0)/4)+.10*evidenceQuality)-Math.max(0,secondaryRate-.6)*15;
+ const domains={career:scoreDomain(['C','S3','X2','V2','BF','BS2']),relationship:scoreDomain(['E','S1','S2','X1','X3','X4','V1','BW','BS1']),social:scoreDomain(['E5','E6','S2','S3','X1','X2','V1','BS','G'])};
+ const diagnostics={coreHits,evidenceCounts:answeredIds.reduce((z,id)=>{const e=state.answers[id]?.evidence||'vibe';z[e]=(z[e]||0)+1;return z},{}),coreStageCounts:Object.fromEntries(T.map(t=>[t,coreStages[t].size])),strategyStageCounts:Object.fromEntries(T.map(t=>[t,strategyStages[t].size])),vibeStageCounts:Object.fromEntries(T.map(t=>[t,vibeStages[t].size])),modeCounts,secondaryRate,exposure:{coreMax,strategyMax,vibeMax,smartMax}};
+ return {core,strategy,vibe,smart,packs:packPct,skillMaturity:evidenceQuality*100,domains,scene,answered,total,confidence:Math.max(0,Math.min(100,confidence)),gap,diagnostics};
+}
+function scoreDomain(prefixes){const raw=blank(),max=emptyMax();let evidence=0;const all=questions.concat(Object.values(branchPool).flat());for(const q of all){if(q.layer==='vibe'||!prefixes.some(p=>q.id.startsWith(p)))continue;const a=state.answers[q.id];if(!a?.rank?.length)continue;const mode=a.mode||'mixed',mw=mode==='forced'?.55:mode==='learned'?.72:1;for(const t of T)if(q.opts.some(o=>o.core===t||o.core2===t))max[t]+=mw;a.rank.forEach((oi,pos)=>{const o=q.opts[oi],w=(pos===0?1:.38)*mw;raw[o.core]+=w;if(o.core2)raw[o.core2]+=w*.9;evidence++})}return {scores:strength(raw,max),evidence}}
+function percent(o){const sum=Object.values(o).reduce((a,b)=>a+b,0)||1;return Object.fromEntries(Object.entries(o).map(([k,v])=>[k,100*v/sum]))}
+function anchorConsistency(a){const vals=Object.values(a).filter(x=>x.length>1);if(!vals.length)return .5;return vals.reduce((s,x)=>{const c={};x.forEach(v=>c[v]=(c[v]||0)+1);return s+Math.max(...Object.values(c))/x.length},0)/vals.length}
+const names={W:'白月光',Z:'朱砂痣',Q:'千里马',F:'凤凰',BS:'Book Smart',SS:'Street Smart'};
+function classifyProfile(r){
+ const cs=Object.entries(r.core).sort((a,b)=>b[1]-a[1]),B=cs[0][0],Acore=cs[1][0],gap=cs[0][1]-cs[1][1],d=r.diagnostics;
+ const dualEvidence=r.core[B]>=45&&r.core[Acore]>=45&&gap<=12&&d.coreHits[B]>=3&&d.coreHits[Acore]>=3&&d.coreStageCounts[B]>=2&&d.coreStageCounts[Acore]>=2;
+ const dualIndex=Math.max(0,Math.min(100,(1-Math.min(1,gap/25))*40+Math.min(1,r.core[Acore]/70)*25+Math.min(1,d.coreHits[Acore]/4)*20+Math.min(1,d.coreStageCounts[Acore]/3)*15));
+ const vs=Object.entries(r.vibe).sort((a,b)=>b[1]-a[1]),V=vs[0][0],vibeStrong=r.vibe[V]>=58&&d.vibeStageCounts[V]>=1;
+ const ss=Object.entries(r.strategy).filter(([k])=>k!==B).sort((a,b)=>b[1]-a[1]),ST=ss[0]?.[0],strategyStrong=ST&&r.strategy[ST]>=58&&r.strategy[ST]>=r.strategy[B]+8&&d.strategyStageCounts[ST]>=2;
+ if(dualEvidence){const base=names[B]+'＋'+names[Acore]+'双内核混合';return {kind:'dual',label:vibeStrong&&V!==B&&V!==Acore?names[V]+'感（'+base+'）':base,core:B,secondCore:Acore,vibe:V,strategy:ST,dualIndex,reason:'两个属性都在核心层达到门槛，并跨高代价、压力或无人看见场景重复出现。'}}
+ if(gap<=12&&r.core[Acore]>=52)return {kind:'pending-dual',label:names[B]+'／'+names[Acore]+'疑似双内核',core:B,secondCore:Acore,vibe:V,strategy:ST,dualIndex,reason:'两个核心分接近，但第二核心的跨场景证据尚未达到双内核门槛。'};
+ if(vibeStrong&&V!==B)return {kind:'vibe',label:names[V]+'感'+names[B],core:B,secondCore:null,vibe:V,strategy:ST,dualIndex,reason:names[B]+'在核心层领先；他人第一印象/外在气质更接近'+names[V]+'。'};
+ if(strategyStrong)return {kind:'strategy',label:names[B]+'核心＋'+names[ST]+'策略',core:B,secondCore:null,vibe:V,strategy:ST,dualIndex,reason:'核心与策略分层明显，但他人观感不足以使用“感”语法。'};
+ return {kind:'pure',label:names[B]+'主导',core:B,secondCore:null,vibe:V,strategy:ST,dualIndex,reason:'一个核心稳定领先，观感和策略不足以构成独立复合标签。'};
+}
+function domainLabel(d){const s=Object.entries(d.scores).sort((a,b)=>b[1]-a[1]);return {type:s[0][0],second:s[1][0],label:names[s[0][0]]+'倾向（'+s[0][1].toFixed(1)+'%）',gap:s[0][1]-s[1][1]}}
+function overallText(c,smart,r){const mode=c.kind==='dual'?'两套驱动力都是真实内核，不应把其中一个解释成表面伪装。':c.kind==='vibe'?'核心与他人观感分层明显，压力和无人看见时更应参考核心属性。':c.kind==='pending-dual'?'暂不强行判断“感”还是“双内核”，应完成自动追加的消歧题。':'核心相对集中。';return c.reason+' '+mode+' 信息处理更偏 '+names[smart]+'；核心前两名差 '+r.gap.toFixed(1)+' 个百分点。'}
+function careerAdvice(t,s){const m={F:'事业驱动更偏稀缺能力、判断力和平台放大。优势是上限与不可替代性；风险是等待识货者、低估持续交付。',Q:'事业驱动更偏执行、试错和路径迭代。优势是能把路走通；风险是忙于尝试、缺少长期主线。',W:'事业选择更看重稳定规则、长期组织关系和可持续性。优势是可靠；风险是长期替别人铺路。',Z:'事业动力更依赖强反馈、影响力和被看见。优势是传播与感染；风险是把关注度误当成复利。'};return m[t]+(s==='BS'?' 适合用知识体系、长期规划和趋势判断兑现。':' 适合用即时反馈、信息差和现实机会兑现。')}
+function relationshipAdvice(t,s){const m={W:'婚恋核心更偏稳定、可预测和长期付出。要区分真实稳定与压抑需求，提前设置互惠边界。',Z:'婚恋核心更偏强回应、被在意和情绪张力。宜直接表达需要，减少通过试探、嫉妒或冷淡验证感情。',Q:'在关系中容易把问题当项目推进。优势是能解决现实困难；风险是把伴侣变成待改造对象。',F:'在关系中重视尊重、价值匹配和成长上限。优势是选择标准清楚；风险是把暂时不被理解误判为根本不匹配。'};return m[t]+(s==='BS'?' 更容易为了未来压住当下，需要定期检查兑现。':' 更容易随当下信号加减投入，需要防止冲动进入或过早退出。')}
+function socialAdvice(t){return {W:'社交上重可靠和低冲突；不要把全部精力只留给高地位者。',Z:'个人印象和情绪记忆点是优势；要保证互动建立在真实价值与边界上。',Q:'靠合作和解决问题进入圈层最有效；要避免长期只做“能干活的人”。',F:'靠稀缺判断和能力获得位置；需用持续交付降低“只会表现”的误读。'}[t]}
+function adviceList(c,smart){const B=c.core,A=c.secondCore||(c.kind==='vibe'?c.vibe:null),out=[];out.push({W:'练习更早表达需求，不要等忍耐变成怨气。',Z:'把强情绪转换成清晰请求，少用测试和撤回关注。',Q:'给试错设置停止条件，并保留一个长期主线。',F:'把稀缺能力变成可验证作品，不只等待识货者。'}[B]);if(A)out.push(c.kind==='dual'?'分别为两套核心安排现实出口，避免长期牺牲其中一方。':'把'+names[A]+'当辅助技能使用，不要让表面策略掩盖'+names[B]+'的真实需求。');out.push(smart==='BS'?'定期用现实证据检查长期投入，防止被未来叙事拖延止损。':'给即时好处与坏处设置冷静期和最低验证标准。');out.push('分别记录事业、亲密关系和普通社交；场景不同就报告场景差异，不强求一个标签覆盖全部。');return out}
+function selectedEvidence(){const all=questions.concat(Object.values(branchPool).flat()),rows=[];for(const q of all){const a=state.answers[q.id];if(!a?.rank?.length)continue;const o=q.opts[a.rank[0]];rows.push({stage:q.stage,stem:q.stem,choice:o.text,why:o.why,mode:a.mode||'未标记'});}return rows.slice(0,12)}
+function showResult(){const r=score(true),c=classifyProfile(r),smart=Object.entries(r.smart).sort((a,b)=>b[1]-a[1])[0][0],packs=Object.entries(r.packs).sort((a,b)=>b[1]-a[1]).slice(0,4),career=domainLabel(r.domains.career),relation=domainLabel(r.domains.relationship),social=domainLabel(r.domains.social),ev=selectedEvidence();$('quiz').classList.add('hidden');$('result').classList.remove('hidden');$('progressBar').style.width='100%';$('result').innerHTML='<div class="result-title">'+names[smart]+'｜'+c.label+'</div><p>总体置信度：<b>'+r.confidence.toFixed(0)+'%</b>｜技能证据成熟度：<b>'+r.skillMaturity.toFixed(0)+'%</b>｜双内核指数：<b>'+c.dualIndex.toFixed(0)+'/100</b>｜完成 '+r.answered+'/'+r.total+'</p><h3>总体评价</h3><p>'+overallText(c,smart,r)+'</p><div class="grid">'+T.map(k=>metric(names[k]+'核心',r.core[k])).join('')+'</div><h3>事业评价：'+career.label+'</h3><p>'+careerAdvice(career.type,smart)+'</p><div class="grid">'+T.map(k=>metric(names[k],r.domains.career.scores[k])).join('')+'</div><h3>婚恋/亲密关系：'+relation.label+'</h3><p>'+relationshipAdvice(relation.type,smart)+'</p><div class="grid">'+T.map(k=>metric(names[k],r.domains.relationship.scores[k])).join('')+'</div><h3>社交与资源：'+social.label+'</h3><p>'+socialAdvice(social.type)+'</p><h3>他人观感层（决定“X感”）</h3><div class="grid">'+T.map(k=>metric(names[k]+'观感',r.vibe[k])).join('')+'</div><h3>后天策略层</h3><div class="grid">'+T.map(k=>metric(names[k]+'策略',r.strategy[k])).join('')+'</div><h3>Book / Street Smart</h3><div class="grid">'+S.map(k=>metric(names[k],r.smart[k])).join('')+'</div><h3>最强细分技能包</h3><p>'+packs.map(([k,v])=>'<span class="pill">'+names[k.split('_')[1]]+names[k.split('_')[0]]+' '+v.toFixed(1)+'%</span>').join('')+'</p><h3>针对性建议</h3><ul>'+adviceList(c,smart).map(x=>'<li>'+x+'</li>').join('')+'</ul><details><summary>本次判定依据（前 12 条）</summary><table><tr><th>场景</th><th>选择</th><th>编码理由</th><th>自发/策略</th></tr>'+ev.map(x=>'<tr><td>'+escapeHtml(x.stage)+'</td><td>'+escapeHtml(x.choice)+'</td><td>'+escapeHtml(x.why)+'</td><td>'+escapeHtml(x.mode)+'</td></tr>').join('')+'</table></details><details><summary>精细诊断参数</summary><pre>'+escapeHtml(JSON.stringify({classification:c,coreHits:r.diagnostics.coreHits,coreStageCounts:r.diagnostics.coreStageCounts,strategyStageCounts:r.diagnostics.strategyStageCounts,vibeStageCounts:r.diagnostics.vibeStageCounts,modeCounts:r.diagnostics.modeCounts,secondaryRate:r.diagnostics.secondaryRate},null,2))+'</pre></details><div class="notice small">“感”与“双内核”已分开：感属性只由他人观感层判定；后天技能主要进入独立技能层，不进入“感”判定，也不能单独构成双内核；双内核要求两个属性都在核心题，并跨高代价、压力和无人看见场景重复出现。</div><div class="actions"><button onclick="exportJson()">导出答案 JSON</button><button onclick="window.print()">打印/另存 PDF</button><button onclick="startTest()">检查答案</button><button onclick="resetAll()">重新测试</button></div>'}
+function metric(n,v){return `<div class="metric"><b>${n}</b><br>${v.toFixed(1)}%<div class="bar"><i style="width:${v}%"></i></div></div>`}
+function exportJson(){const blob=new Blob([JSON.stringify({state,result:score(true)},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='四属性测试结果.json';a.click();URL.revokeObjectURL(a.href)}
+function resetAll(){if(confirm('确定清除本机保存的答案吗？')){localStorage.removeItem('xiaochen-v42');state={answers:{},version:42,branches:[]};location.reload()}}
+function showMethod(){$('intro').classList.add('hidden');$('quiz').classList.add('hidden');$('result').classList.add('hidden');$('method').classList.remove('hidden')}
+function hideMethod(){$('method').classList.add('hidden');$('intro').classList.remove('hidden')}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+load();
+</script></body></html>
